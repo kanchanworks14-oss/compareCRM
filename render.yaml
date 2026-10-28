@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: compareprojects-crm
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: backend
+    # --include=dev: the Prisma CLI is a devDependency and is needed for generate/migrate
+    buildCommand: npm ci --include=dev && npx prisma migrate deploy
+    startCommand: npm start
+    healthCheckPath: /api/crm/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1"
+      - key: COOKIE_SAMESITE
+        value: strict
+      - key: REPORT_TIMEZONE
+        value: Asia/Kolkata
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

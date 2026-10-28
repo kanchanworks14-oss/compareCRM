@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Property Enquiry | Compare Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css">
+</head>
+<body class="public-page">
+<main class="public-wrap">
+  <div class="brand public-brand"><div class="brand-mark">CP</div><div><b>Compare Projects</b><small>PROPERTY ENQUIRY</small></div></div>
+  <div class="panel form-panel">
+    <div class="form-heading"><div class="form-symbol customer-symbol">♙</div><div><h3>Customer property enquiry</h3><p>Tell us what kind of property you’re looking for and our team will get back to you.</p></div></div>
+    <form data-endpoint="/public/customer" novalidate>
+      <div class="field-grid">
+        <label>Full name <span>*</span><input name="name" required minlength="2" maxlength="100" autocomplete="name" placeholder="e.g. Aditi Sharma"></label>
+        <label>Phone number <span>*</span><input name="phone" required type="tel" pattern="\+?[0-9 \(\)\-]{10,20}" autocomplete="tel" placeholder="+91 98765 43210"></label>
+        <label>Email address <span>*</span><input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="you@example.com"></label>
+        <label>Preferred location <span>*</span><input name="location" required maxlength="120" placeholder="e.g. Andheri, Mumbai"></label>
+        <label>Budget range<select name="budget"><option value="">Select budget</option><option>Under ₹50 lakh</option><option>₹50 lakh – ₹1 crore</option><option>₹1 – 2 crore</option><option>₹2 crore+</option></select></label>
+        <label>Property type<select name="propertyType"><option value="">Select property type</option><option>Apartment</option><option>Villa</option><option>Plot / Land</option><option>Commercial</option></select></label>
+        <label class="wide">Property / project of interest<input name="propertyTitle" maxlength="150" placeholder="Project name (optional)"></label>
+        <label class="wide">Additional details<textarea name="message" rows="3" maxlength="2000" placeholder="Number of bedrooms, timeline, anything else…"></textarea></label>
+        <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <label class="consent"><input name="contactConsent" type="checkbox" required> I agree to be contacted about this enquiry. <span>*</span></label>
+      <div class="form-actions"><button type="reset" class="btn btn-light">Clear form</button><button class="btn btn-primary" type="submit">Submit enquiry <span>→</span></button></div>
+      <div id="formFeedback" class="form-feedback hidden" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+  <p class="public-foot">Also: <a href="developer.html">Developer project submission</a> · <a href="broker.html">Agent / broker property submission</a></p>
+</main>
+<script src="config.js"></script>
+<script src="public-form.js"></script>
+</body></html>

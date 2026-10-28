@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>List Your Project | Compare Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css">
+</head>
+<body class="public-page">
+<main class="public-wrap">
+  <div class="brand public-brand"><div class="brand-mark">CP</div><div><b>Compare Projects</b><small>FOR DEVELOPERS</small></div></div>
+  <div class="panel form-panel">
+    <div class="form-heading"><div class="form-symbol developer-symbol">⌂</div><div><h3>Developer project submission</h3><p>Share your details and the project you’d like to list. Our team reviews every submission before it goes live.</p></div></div>
+    <form data-endpoint="/public/developer" novalidate>
+      <div class="field-grid">
+        <label>Contact person <span>*</span><input name="name" required minlength="2" maxlength="100" autocomplete="name" placeholder="Your full name"></label>
+        <label>Company / developer name <span>*</span><input name="companyName" required maxlength="150" autocomplete="organization" placeholder="e.g. Greenfield Developers"></label>
+        <label>Phone number <span>*</span><input name="phone" required type="tel" pattern="\+?[0-9 \(\)\-]{10,20}" autocomplete="tel" placeholder="+91 98765 43210"></label>
+        <label>Email address <span>*</span><input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="you@company.com"></label>
+        <label>Project name <span>*</span><input name="projectName" required maxlength="150" placeholder="e.g. Greenfield Towers"></label>
+        <label>Project location <span>*</span><input name="projectLocation" required maxlength="150" placeholder="Locality, city"></label>
+        <label>Project type <span>*</span><select name="projectType" required><option value="">Select project type</option><option>Residential</option><option>Commercial</option><option>Mixed-use</option><option>Plotted development</option></select></label>
+        <label>Total units<input name="totalUnits" type="number" min="1" max="100000" step="1" placeholder="e.g. 240"></label>
+        <label>RERA registration number<input name="reraNumber" maxlength="60" placeholder="e.g. P51700012345"></label>
+        <label>Expected possession<input name="possession" maxlength="40" placeholder="e.g. Dec 2028 / Ready to move"></label>
+        <label class="wide">Project details / approvals<textarea name="message" rows="3" maxlength="2000" placeholder="Configurations, amenities, approvals, pricing…"></textarea></label>
+        <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <label class="consent"><input name="contactConsent" type="checkbox" required> I agree to be contacted about this submission. <span>*</span></label>
+      <div class="form-actions"><button type="reset" class="btn btn-light">Clear form</button><button class="btn btn-primary" type="submit">Submit project <span>→</span></button></div>
+      <div id="formFeedback" class="form-feedback hidden" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+  <p class="public-foot">Also: <a href="customer.html">Customer property enquiry</a> · <a href="broker.html">Agent / broker property submission</a></p>
+</main>
+<script src="config.js"></script>
+<script src="public-form.js"></script>
+</body></html>
