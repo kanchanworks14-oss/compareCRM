@@ -5,8 +5,9 @@ services:
     region: singapore
     plan: free
     rootDir: backend
-    # --include=dev: the Prisma CLI is a devDependency and is needed for generate/migrate
-    buildCommand: npm ci --include=dev && npx prisma migrate deploy
+    # --include=dev: the Prisma CLI is a devDependency, needed for `prisma generate` (postinstall).
+    # Tables are created by the website repo, which owns the schema — never migrate from here.
+    buildCommand: npm ci --include=dev
     startCommand: npm start
     healthCheckPath: /api/crm/health
     envVars:
