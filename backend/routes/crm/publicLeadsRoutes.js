@@ -6,7 +6,8 @@
 //
 //   POST /customer   — customer property enquiry      → Lead(leadType=customer)
 //   POST /developer  — developer project submission   → Lead(leadType=developer)
-//   POST /broker     — agent/broker property listing  → Lead(leadType=broker)
+//   POST /agent      — agent property listing         → Lead(leadType=agent)
+//   POST /broker     — legacy alias of /agent (same form, saves leadType=agent)
 
 import express from "express";
 import { submitLead } from "../../controllers/crm/publicLeadsController.js";
@@ -22,6 +23,7 @@ router.use(rateLimit({
 
 router.post("/customer", submitLead("customer"));
 router.post("/developer", submitLead("developer"));
-router.post("/broker", submitLead("broker"));
+router.post("/agent", submitLead("agent"));
+router.post("/broker", submitLead("agent")); // legacy URL of the Agent form
 
 export default router;

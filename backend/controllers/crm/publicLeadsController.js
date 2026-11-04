@@ -1,7 +1,7 @@
 // backend/controllers/crm/publicLeadsController.js
 //
 // Handlers for backend/routes/crm/publicLeadsRoutes.js — the three public
-// forms (customer enquiry, developer project, agent/broker property).
+// forms (customer enquiry, developer project, agent property).
 //
 // Each submission becomes one `Lead` row with the matching LeadType. Only
 // existing columns are written; form-specific fields that have no column
@@ -53,9 +53,9 @@ export const FORMS = {
     title: (d) => d.projectName,
     metadataKeys: ["companyName", "projectLocation", "projectType", "totalUnits", "reraNumber", "possession", "message"],
   },
-  broker: {
-    leadType: "broker",
-    source: "crm_broker_form",
+  agent: {
+    leadType: "agent",
+    source: "crm_agent_form",
     spec: {
       agencyName: { type: "string", required: true, max: 150 },
       reraNumber: { type: "string", max: 60 },

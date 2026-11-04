@@ -9,7 +9,7 @@ import { leadScope, ROLES } from "../../middleware/auth.js";
 import { buildLeadWhere, loadFollowUps, STAGES } from "./leadsController.js";
 
 const REPORT_TZ = process.env.REPORT_TIMEZONE || "Asia/Kolkata";
-const TYPES = ["customer", "developer", "broker", "builder"];
+const TYPES = ["customer", "developer", "agent", "owner"];
 
 const zeroed = (keys) => Object.fromEntries(keys.map((k) => [k, 0]));
 
