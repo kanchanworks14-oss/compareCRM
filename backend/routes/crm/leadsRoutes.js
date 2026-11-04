@@ -12,7 +12,7 @@
 //   PATCH /:id                      — stage (all roles), assignedTo (admin, sales_manager)
 //   POST  /:id/follow-ups           — schedule a follow-up
 //   PATCH /:id/follow-ups/:followUpId — mark done / reopen
-//   POST  /:id/review               — developer/broker submission review (admin, sales_manager)
+//   POST  /:id/review               — developer/agent submission review (admin, sales_manager)
 
 import express from "express";
 import {

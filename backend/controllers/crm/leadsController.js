@@ -4,7 +4,7 @@
 // records. Every query goes through leadScope(), so a sales rep can only
 // ever read or change leads assigned to them.
 //
-// Follow-ups and developer/broker submission review have no columns in the
+// Follow-ups and developer/agent submission review have no columns in the
 // schema yet, so they live under CRM-owned keys in Lead.metadata
 // (`crmFollowUps`, `crmReview`). Website-written metadata keys are never
 // touched.
@@ -16,8 +16,8 @@ import { leadScope, ROLES } from "../../middleware/auth.js";
 import { reference } from "./publicLeadsController.js";
 
 export const STAGES = ["new", "contacted", "qualified", "converted", "rejected"];
-const SUBMISSION_TYPES = ["developer", "broker", "builder"];
-const TYPE_GROUPS = { customer: ["customer"], developer: ["developer", "builder"], broker: ["broker"], builder: ["builder"], submissions: SUBMISSION_TYPES };
+const SUBMISSION_TYPES = ["developer", "agent"];
+const TYPE_GROUPS = { customer: ["customer"], developer: ["developer"], agent: ["agent"], owner: ["owner"], submissions: SUBMISSION_TYPES };
 const REVIEW_STATUSES = ["pending", "approved", "rejected"];
 
 const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
@@ -268,7 +268,7 @@ export const reviewSubmission = async (req, res) => {
     req.user,
     req.params.id,
     (meta, lead) => {
-      if (!SUBMISSION_TYPES.includes(lead.leadType)) throw new HttpError(400, "Only developer and agent/broker submissions can be reviewed.");
+      if (!SUBMISSION_TYPES.includes(lead.leadType)) throw new HttpError(400, "Only developer and agent submissions can be reviewed.");
       meta.crmReview = { status: d.status, note: d.note, reviewedById: req.user.id, reviewedBy: req.user.email, reviewedAt: new Date().toISOString() };
       return meta.crmReview;
     },

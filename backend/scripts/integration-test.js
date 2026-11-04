@@ -114,10 +114,10 @@ const main = async () => {
   const devRow = developerId && await prisma.lead.findUnique({ where: { id: developerId } });
   check("developer form → 201, row has leadType=developer, propertyTitle=project", r.status === 201 && devRow?.leadType === "developer" && devRow?.propertyTitle === "ITest Towers" && devRow?.metadata?.totalUnits === 240);
 
-  r = await anon.call("POST", "/public/broker", formLead("broker", { agencyName: "ITest Realty", propertyTitle: "ITest Office", propertyType: "Commercial", listingType: "Rent / Lease", location: "BKC", expectedPrice: "₹3 lakh/month" }), { csrf: false });
-  const brokerId = r.json?.id;
-  const brokerRow = brokerId && await prisma.lead.findUnique({ where: { id: brokerId } });
-  check("broker form → 201, row has leadType=broker", r.status === 201 && brokerRow?.leadType === "broker" && brokerRow?.metadata?.agencyName === "ITest Realty");
+  r = await anon.call("POST", "/public/agent", formLead("agent", { agencyName: "ITest Realty", propertyTitle: "ITest Office", propertyType: "Commercial", listingType: "Rent / Lease", location: "BKC", expectedPrice: "₹3 lakh/month" }), { csrf: false });
+  const agentId = r.json?.id;
+  const agentRow = agentId && await prisma.lead.findUnique({ where: { id: agentId } });
+  check("agent form → 201, row has leadType=agent, source=crm_agent_form", r.status === 201 && agentRow?.leadType === "agent" && agentRow?.source === "crm_agent_form" && agentRow?.metadata?.agencyName === "ITest Realty");
 
   r = await anon.call("POST", "/public/customer", customerBody, { csrf: false });
   const dupCount = await prisma.lead.count({ where: { email: mail("customer") } });
@@ -153,15 +153,15 @@ const main = async () => {
   check("rep cannot reassign (403)", (await rep.call("PATCH", `/leads/${customerId}`, { assignedTo: creds.sales_rep2.id })).status === 403);
   check("rep cannot update someone else's lead (404)", (await rep.call("PATCH", `/leads/${developerId}`, { stage: "contacted" })).status === 404);
   check("invalid stage → 400", (await manager.call("PATCH", `/leads/${customerId}`, { stage: "won" })).status === 400);
-  check("assign to non-existent user → 400", (await manager.call("PATCH", `/leads/${brokerId}`, { assignedTo: crypto.randomUUID() })).status === 400);
+  check("assign to non-existent user → 400", (await manager.call("PATCH", `/leads/${agentId}`, { assignedTo: crypto.randomUUID() })).status === 400);
 
   r = await manager.call("GET", `/leads?q=${RUN}&type=developer`);
   check("filter type=developer", r.json?.total === 1 && r.json.items[0].id === developerId);
-  r = await manager.call("GET", `/leads?q=${RUN}&type=broker`);
-  check("filter type=broker", r.json?.total === 1 && r.json.items[0].id === brokerId);
+  r = await manager.call("GET", `/leads?q=${RUN}&type=agent`);
+  check("filter type=agent", r.json?.total === 1 && r.json.items[0].id === agentId);
   r = await manager.call("GET", `/leads?q=${RUN}&type=customer&stage=contacted`);
   check("filter type+stage", r.json?.total === 1 && r.json.items[0].id === customerId);
-  r = await manager.call("GET", `/leads?q=${encodeURIComponent(mail("broker"))}`);
+  r = await manager.call("GET", `/leads?q=${encodeURIComponent(mail("agent"))}`);
   check("search by email", r.json?.total === 1);
   r = await manager.call("GET", `/leads?q=${RUN}&assignedTo=unassigned`);
   check("filter unassigned", r.json?.total === 3);
@@ -172,7 +172,7 @@ const main = async () => {
   r = await rep.call("POST", `/leads/${customerId}/follow-ups`, { dueAt: due, note: "Call back about 3 BHK" });
   const followUpId = r.json?.followUp?.id;
   check("rep schedules follow-up on own lead", r.status === 201 && followUpId);
-  check("rep cannot add follow-up to unassigned lead", (await rep.call("POST", `/leads/${brokerId}/follow-ups`, { dueAt: due, note: "x" })).status === 404);
+  check("rep cannot add follow-up to unassigned lead", (await rep.call("POST", `/leads/${agentId}/follow-ups`, { dueAt: due, note: "x" })).status === 404);
   r = await rep.call("GET", "/leads/follow-ups");
   check("follow-up appears in rep queue", r.json?.followUps?.some((f) => f.id === followUpId));
   check("follow-up visible to manager", (await manager.call("GET", "/leads/follow-ups")).json?.followUps?.some((f) => f.id === followUpId));
@@ -185,7 +185,7 @@ const main = async () => {
 
   r = await rep.call("POST", "/activities", { leadId: customerId, activityType: "call", notes: "Discussed budget" });
   check("rep logs a call activity", r.status === 201);
-  check("rep cannot log activity on others' lead", (await rep.call("POST", "/activities", { leadId: brokerId, activityType: "note", notes: "x" })).status === 404);
+  check("rep cannot log activity on others' lead", (await rep.call("POST", "/activities", { leadId: agentId, activityType: "note", notes: "x" })).status === 404);
   r = await rep.call("GET", `/leads/${customerId}`);
   const types = (r.json?.activities ?? []).map((a) => a.activityType);
   check("lead detail has full audit trail", ["assignment", "stage_change", "follow_up_scheduled", "follow_up_completed", "call"].every((t) => types.includes(t)), JSON.stringify(types));
@@ -196,12 +196,12 @@ const main = async () => {
   r = await rep.call("POST", "/site-visits", { leadId: customerId, scheduledAt: visitAt, notes: "Meet at gate" });
   const visitId = r.json?.visit?.id;
   check("rep schedules site visit on own lead", r.status === 201 && r.json?.visit?.crmUser?.id === creds.sales_rep.id);
-  check("rep cannot schedule visit on others' lead", (await rep.call("POST", "/site-visits", { leadId: brokerId, scheduledAt: visitAt })).status === 404);
+  check("rep cannot schedule visit on others' lead", (await rep.call("POST", "/site-visits", { leadId: agentId, scheduledAt: visitAt })).status === 404);
   check("other rep cannot see the visit", !(await rep2.call("GET", "/site-visits")).json?.visits?.some((v) => v.id === visitId));
   r = await rep.call("PATCH", `/site-visits/${visitId}`, { status: "completed" });
   check("rep marks visit completed", r.status === 200 && r.json?.visit?.status === "completed");
   check("other rep cannot update it (404)", (await rep2.call("PATCH", `/site-visits/${visitId}`, { status: "cancelled" })).status === 404);
-  r = await manager.call("POST", "/site-visits", { leadId: brokerId, scheduledAt: visitAt, crmUserId: creds.sales_rep2.id });
+  r = await manager.call("POST", "/site-visits", { leadId: agentId, scheduledAt: visitAt, crmUserId: creds.sales_rep2.id });
   check("manager schedules visit for another rep", r.status === 201 && r.json?.visit?.crmUser?.id === creds.sales_rep2.id);
   const visitRow = await prisma.siteVisit.findUnique({ where: { id: visitId } });
   check("site visit persisted in site_visits", visitRow?.status === "completed" && visitRow?.leadId === customerId);
@@ -210,11 +210,11 @@ const main = async () => {
   r = await manager.call("POST", `/leads/${developerId}/review`, { status: "approved", note: "RERA verified" });
   check("manager approves developer submission", r.status === 200 && r.json?.review?.status === "approved");
   check("review of a customer lead → 400", (await manager.call("POST", `/leads/${customerId}/review`, { status: "approved" })).status === 400);
-  check("rep cannot review (403)", (await rep.call("POST", `/leads/${brokerId}/review`, { status: "approved" })).status === 403);
+  check("rep cannot review (403)", (await rep.call("POST", `/leads/${agentId}/review`, { status: "approved" })).status === 403);
   r = await manager.call("GET", `/leads?q=${RUN}&review=approved`);
   check("filter review=approved", r.json?.total === 1 && r.json.items[0].id === developerId);
   r = await manager.call("GET", `/leads?q=${RUN}&review=pending`);
-  check("filter review=pending includes never-reviewed broker", r.json?.items?.some((l) => l.id === brokerId) && !r.json.items.some((l) => l.id === developerId), JSON.stringify(r.json?.items?.map((l) => l.leadType)));
+  check("filter review=pending includes never-reviewed agent", r.json?.items?.some((l) => l.id === agentId) && !r.json.items.some((l) => l.id === developerId), JSON.stringify(r.json?.items?.map((l) => l.leadType)));
 
   section("7. Reports + CSV export");
   r = await admin.call("GET", "/reports/summary");
@@ -265,10 +265,15 @@ const main = async () => {
   check("logout clears the session cookie", r.status === 200 && admin.cookie === "");
   check("after logout, protected route → 401", (await admin.call("GET", "/leads")).status === 401);
 
+  section("8b. Legacy Agent endpoint");
+  r = await anon.call("POST", "/public/broker", formLead("agent-legacy", { agencyName: "ITest Legacy Realty", propertyTitle: "ITest Legacy Shop", propertyType: "Commercial", listingType: "Sale", location: "Dadar" }), { csrf: false });
+  const legacyRow = r.json?.id && await prisma.lead.findUnique({ where: { id: r.json.id } });
+  check("legacy /public/broker → 201, saves leadType=agent, source=crm_agent_form", r.status === 201 && legacyRow?.leadType === "agent" && legacyRow?.source === "crm_agent_form" && legacyRow?.metadata?.form === "agent");
+
   section("9. Rate limiting");
   let limited = false;
   for (let i = 0; i < 15 && !limited; i++) {
-    const x = await anon.call("POST", "/public/broker", { name: "x" }, { csrf: false });
+    const x = await anon.call("POST", "/public/agent", { name: "x" }, { csrf: false });
     limited = x.status === 429;
   }
   check("public form endpoint returns 429 when flooded", limited);

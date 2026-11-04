@@ -42,4 +42,5 @@ code{background:#f1f4f9;border-radius:4px;padding:1px 5px;font-size:.95em}
 .public-foot{text-align:center;color:#8794a7;font-size:11px;margin-top:18px}.public-foot a{color:var(--blue)}
 @media(max-width:900px){.form-link-grid,.report-grid{grid-template-columns:1fr}.activity-list li{grid-template-columns:1fr}}
 .top-logout{padding:8px 11px}
+.cat-owner{background:#fff3e4;color:#d98a27}.owner-bar,.owner-dot{background:#f4a54b}
 @media(max-width:560px){.top-logout span{display:none}.detail-grid{grid-template-columns:1fr}.auth-card{padding:20px}.pager{justify-content:space-between}}
